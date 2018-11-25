@@ -1,0 +1,43 @@
+import tkinter
+from tkinter import *
+import csv
+
+tk = Tk()
+
+with open('coordenadas2.csv')as File:
+    reader=csv.reader(File, delimiter=';', quotechar=';', quoting=csv.QUOTE_MINIMAL)
+    coordenadas={}
+    for row in reader:
+        coordenadas[row[0]]=(float(row[1]),float(row[2]),float(row[3]),float(row[4]))
+        
+with open('1997-1998.csv') as File:
+    reader=csv.reader(File, delimiter=';', quotechar=';', quoting=csv.QUOTE_MINIMAL)
+    exportacion={}            
+
+    nombreanterior='zzz'
+    for row in reader:
+        nombre=row[0]
+        if nombreanterior!=nombre:
+            exportacion[nombre]={}
+            nombreanterior=nombre
+    
+        exportacion[row[0]][row[1]]=float(row[2])
+        
+def sketch(coordenadas, exportacion):
+    canvas=Canvas(tk,width=1300, height=620, bg='white')
+    tk.title("1997-1998")
+    canvas.pack(expand=YES, fill=BOTH)
+    
+    for i in coordenadas.keys():
+        widget=Button(canvas,text=i, bg="white")
+        widget.pack()
+        canvas.create_window(coordenadas[i][0], coordenadas[i][1], window=widget)
+        canvas.create_text(coordenadas[i][0], coordenadas[i][1], text=i)
+        
+    for i in exportacion.keys():
+        for j in exportacion[i].keys():
+            if exportacion[i][j]>0:
+                canvas.create_line(coordenadas[i][2], coordenadas[i][3], coordenadas[j][2], coordenadas[j][3]) 
+    return canvas
+c=sketch(coordenadas,exportacion)
+mainloop()
